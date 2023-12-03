@@ -9,7 +9,6 @@ use Flow\ETL\Filesystem\Stream\FileStream;
 use Flow\ETL\Filesystem\Stream\Mode;
 use Flow\ETL\FlowContext;
 use Flow\ETL\Loader;
-use Flow\ETL\Pipeline\Closure;
 use Flow\ETL\Rows;
 
 /**
@@ -17,7 +16,7 @@ use Flow\ETL\Rows;
  *     path: Path
  *  }>
  */
-final class YAMLLoader implements Closure, Loader, Loader\FileLoader
+final class YAMLLoader implements Loader, Loader\FileLoader
 {
     public function __construct(
         private readonly Path $path,
@@ -67,17 +66,9 @@ final class YAMLLoader implements Closure, Loader, Loader\FileLoader
         foreach ($nextRows as $row) {
             $rowsArray[] = $row->toArray();
         }
-        $this->writeYAML(
-            $rowsArray,
-            $context->streams()->open($this->path, 'yml', Mode::WRITE, $context->threadSafe())
-        );
-    }
-
-    private function writeYAML(array $rows, FileStream $destination) : void
-    {
-        \yaml_emit_file(
-            filename: $destination->path()->path(),
-            data: $rows,
+        yaml_emit_file(
+            filename: $this->path->path(),
+            data: $rowsArray,
         );
     }
 }
