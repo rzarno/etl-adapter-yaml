@@ -1,0 +1,37 @@
+{
+    "name": "flow-php/etl-adapter-yaml",
+    "type": "library",
+    "description": "PHP ETL - Adapter - YAML",
+    "keywords": [
+        "etl",
+        "extract",
+        "transform",
+        "load",
+        "yaml",
+        "adapter"
+    ],
+    "require": {
+        "php": "~8.1 || ~8.2",
+        "ext-yml": "*",
+        "../vendor/flow-php/etl": "^0.2 || 1.x-dev"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Flow\\": [
+                "src/Flow"
+            ]
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Flow\\": "tests/Flow"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
