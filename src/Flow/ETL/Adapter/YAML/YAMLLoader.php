@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Flow\ETL\Adapter\YAML;
 
 use Flow\ETL\Filesystem\Path;
-use Flow\ETL\Filesystem\Stream\FileStream;
-use Flow\ETL\Filesystem\Stream\Mode;
 use Flow\ETL\FlowContext;
 use Flow\ETL\Loader;
 use Flow\ETL\Rows;
