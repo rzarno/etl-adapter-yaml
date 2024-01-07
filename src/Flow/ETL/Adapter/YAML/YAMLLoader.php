@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Flow\ETL\Adapter\YAML;
 
 use Flow\ETL\Filesystem\Path;
+use Flow\ETL\Filesystem\Stream\FileStream;
 use Flow\ETL\FlowContext;
 use Flow\ETL\Loader;
 use Flow\ETL\Rows;
@@ -55,18 +56,30 @@ final class YAMLLoader implements Loader, Loader\FileLoader
             return;
         }
 
-        $this->write($rows, $context, []);
+        if ($context->partitionEntries()->count()) {
+            foreach ($rows->partitionBy(...$context->partitionEntries()->all()) as $partitionedRows) {
+                $this->write($partitionedRows, $context, $partitionedRows->partitions());
+            }
+        } else {
+            $this->write($rows, $context, []);
+        }
     }
 
-    public function write(Rows $nextRows, FlowContext $context) : void
+    public function write(Rows $nextRows, FlowContext $context, array $partitions) : void
     {
-        $rowsArray = [];
         foreach ($nextRows as $row) {
-            $rowsArray[] = $row->toArray();
+            $this->writeYaml(
+                $row->toArray(),
+                $context->streams()->open($this->path, 'yml', $context->appendSafe(), $partitions)
+            );
         }
-        yaml_emit_file(
-            filename: $this->path->path(),
-            data: $rowsArray,
+    }
+
+    private function writeYaml(array $row, FileStream $destination)
+    {
+        $data = yaml_emit(
+            data: $row,
         );
+        fwrite($destination->resource(), $data);
     }
 }
