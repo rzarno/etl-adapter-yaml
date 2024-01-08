@@ -1,20 +1,23 @@
 <?php
 declare(strict_types=1);
 
-namespace Flow\ETL\Adapter\CSV\Tests\Integration;
+namespace Flow\ETL\Adapter\YAML\Tests\Integration;
 
 use Flow\ETL\DSL\YAML;
+use Flow\ETL\Filesystem\Path;
+use Flow\ETL\Filesystem\SaveMode;
 use Flow\ETL\Flow;
 use Flow\ETL\Row;
 use Flow\ETL\Rows;
 use PHPUnit\Framework\TestCase;
 use function Flow\ETL\DSL\int_entry;
+use function Flow\ETL\DSL\str_entry;
 
 final class YAMLLoaderTest extends TestCase
 {
     public function test_loading_yml_files_with_append_safe() : void
     {
-        $path = \sys_get_temp_dir() . '/' . \uniqid('flow_php_etl_csv_loader', true) . '.yml';
+        $path = \sys_get_temp_dir() . '/' . \uniqid('flow_php_etl_yml_loader', true) . '.yml';
 
         (new Flow())
             ->process(
@@ -98,56 +101,58 @@ YAML,
 
         $this->cleanDirectory($path);
     }
-//
-//    public function test_loading_overwrite_csv() : void
-//    {
-//        $path = \sys_get_temp_dir() . '/' . \uniqid('flow_php_etl_csv_loader', true) . '.csv';
-//
-//        (new Flow())
-//            ->process(
-//                new Rows(
-//                    Row::create(int_entry('id', 1), str_entry('name', 'Norbert')),
-//                    Row::create(int_entry('id', 2), str_entry('name', 'Tomek')),
-//                    Row::create(int_entry('id', 3), str_entry('name', 'Dawid')),
-//                )
-//            )
-//            ->load(to_csv($path))
-//            ->run();
-//
-//        (new Flow())
-//            ->process(
-//                new Rows(
-//                    Row::create(int_entry('id', 1), str_entry('name', 'Norbert')),
-//                    Row::create(int_entry('id', 2), str_entry('name', 'Tomek')),
-//                    Row::create(int_entry('id', 3), str_entry('name', 'Dawid')),
-//                )
-//            )
-//            ->saveMode(overwrite())
-//            ->load(to_csv($path))
-//            ->run();
-//
-//        $this->assertStringContainsString(
-//            <<<'CSV'
-//id,name
-//1,Norbert
-//2,Tomek
-//3,Dawid
-//CSV,
-//            \file_get_contents($path)
-//        );
-//
-//        if (\file_exists($path)) {
-//            \unlink($path);
-//        }
-//    }
-//
-//    public function test_using_pattern_path() : void
-//    {
-//        $this->expectExceptionMessage("CSVLoader path can't be pattern, given: /path/*/pattern.csv");
-//
-//        to_csv(new Path('/path/*/pattern.csv'));
-//    }
-//
+
+    public function test_loading_overwrite_yml() : void
+    {
+        $path = \sys_get_temp_dir() . '/' . \uniqid('flow_php_etl_yml_loader', true) . '.yml';
+
+        (new Flow())
+            ->process(
+                new Rows(
+                    Row::create(int_entry('id', 1), str_entry('name', 'Andromeda')),
+                    Row::create(int_entry('id', 2), str_entry('name', 'Milkyway')),
+                    Row::create(int_entry('id', 3), str_entry('name', 'Pegasus')),
+                )
+            )
+            ->load(YAML::to($path))
+            ->run();
+
+        (new Flow())
+            ->process(
+                new Rows(
+                    Row::create(int_entry('id', 1), str_entry('name', 'Andromeda')),
+                    Row::create(int_entry('id', 2), str_entry('name', 'Milkyway')),
+                    Row::create(int_entry('id', 3), str_entry('name', 'Pegasus')),
+                )
+            )
+            ->mode(SaveMode::Overwrite)
+            ->load(YAML::to($path))
+            ->run();
+
+        $this->assertStringContainsString(
+            <<<'YAML'
+id: 1
+name: Andromeda
+id: 2
+name: Milkyway
+id: 3
+name: Pegasus
+YAML,
+            \file_get_contents($path)
+        );
+
+        if (\file_exists($path)) {
+            \unlink($path);
+        }
+    }
+
+    public function test_using_pattern_path() : void
+    {
+        $this->expectExceptionMessage("YAMLLoader path can't be pattern, given: /path/*/pattern.yml");
+
+        YAML::to(new Path('/path/*/pattern.yml'));
+    }
+
     /**
      * @param string $path
      */

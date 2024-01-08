@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Flow\ETL\Adapter\CSV\Tests\Integration;
+namespace Flow\ETL\Adapter\YAML\Tests\Integration;
 
 use Flow\ETL\Config;
 use Flow\ETL\ConfigBuilder;
