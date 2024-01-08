@@ -77,9 +77,15 @@ final class YAMLLoader implements Loader, Loader\FileLoader
 
     private function writeYaml(array $row, FileStream $destination)
     {
-        $data = yaml_emit(
-            data: $row,
-        );
+        $data = yaml_emit(data: $row);
+        $data = $this->removeFirstAndLastLine($data);
+
         fwrite($destination->resource(), $data);
     }
+
+    private function removeFirstAndLastLine($text) {
+        $text = substr($text, strpos($text, "\n") + 1);
+        return substr($text, 0, strrpos($text, "\n") - 3);
+    }
+
 }

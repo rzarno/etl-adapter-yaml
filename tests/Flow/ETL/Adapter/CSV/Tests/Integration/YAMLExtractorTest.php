@@ -20,9 +20,8 @@ use function Flow\ETL\DSL\ref;
 
 class YAMLExtractorTest extends TestCase
 {
-    public function test_extracting_yml_file_param_names() : void
+    public function test_extracting_yml_file_param_names_and_row_count() : void
     {
-
         $path = __DIR__ . '/../Fixtures/stars.yml';
 
         $rows = df()
@@ -54,7 +53,7 @@ class YAMLExtractorTest extends TestCase
             \array_keys($rows[0]->toArray())
         );
 
-        $this->assertSame(32445, $rows->count());
+        $this->assertSame(10000, $rows->count());
     }
 
 //    public function test_extracting_csv_empty_columns_as_empty_strings() : void

@@ -32,18 +32,12 @@ final class YAMLLoaderTest extends TestCase
 
         $this->assertStringContainsString(
             <<<'YAML'
----
 id: 1
 name: Andromeda
-...
----
 id: 2
 name: Milkyway
-...
----
 id: 3
 name: Pegasus
-...
 YAML,
             \file_get_contents($path . DIRECTORY_SEPARATOR . $files[0])
         );
@@ -84,28 +78,20 @@ YAML,
 
         $this->assertStringContainsString(
             <<<'YAML'
----
 id: 1
 group: 1
-...
----
 id: 2
 group: 1
-...
 YAML,
             \file_get_contents($path . DIRECTORY_SEPARATOR . 'group=1' . DIRECTORY_SEPARATOR . $group1)
         );
 
         $this->assertStringContainsString(
             <<<'YAML'
----
 id: 3
 group: 2
-...
----
 id: 4
 group: 2
-...
 YAML,
             \file_get_contents($path . DIRECTORY_SEPARATOR . 'group=2' . DIRECTORY_SEPARATOR . $group2)
         );
