@@ -109,9 +109,9 @@ YAML,
         (new Flow())
             ->process(
                 new Rows(
-                    Row::create(int_entry('id', 1), str_entry('name', 'Andromeda')),
-                    Row::create(int_entry('id', 2), str_entry('name', 'Milkyway')),
-                    Row::create(int_entry('id', 3), str_entry('name', 'Pegasus')),
+                    Row::create(int_entry('id', 1), str_entry('name', 'Virgo')),
+                    Row::create(int_entry('id', 2), str_entry('name', 'Hydra')),
+                    Row::create(int_entry('id', 3), str_entry('name', 'Ursa Major')),
                 )
             )
             ->load(YAML::to($path))
