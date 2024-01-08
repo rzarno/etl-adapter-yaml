@@ -56,148 +56,51 @@ class YAMLExtractorTest extends TestCase
         $this->assertSame(10000, $rows->count());
     }
 
-//    public function test_extracting_csv_empty_columns_as_empty_strings() : void
-//    {
-//        $extractor = from_csv(
-//            $path = Path::realpath(__DIR__ . '/../Fixtures/file_with_empty_columns.csv'),
-//            empty_to_null: false,
-//        );
+    public function test_extracting_csv_files_from_directory_recursively() : void
+    {
+        $extractor = YAML::from(
+            [
+                Path::realpath(__DIR__ . '/../Fixtures/annual-enterprise-survey-2019-financial-year-provisional-yml.yml'),
+                Path::realpath(__DIR__ . '/../Fixtures/nested/annual-enterprise-survey-2019-financial-year-provisional-yml.yml'),
+            ]
+        );
+
+        $total = 0;
+
+        /** @var Rows $rows */
+        foreach ($extractor->extract(new FlowContext(Config::default())) as $rows) {
+            $rows->each(function (Row $row) : void {
+                $this->assertSame(
+                    [
+                        'Year',
+                        'Industry_aggregation_NZSIOC',
+                        'Industry_code_NZSIOC',
+                        'Industry_name_NZSIOC',
+                        'Units',
+                        'Variable_code',
+                        'Variable_name',
+                        'Variable_category',
+                        'Value',
+                        'Industry_code_ANZSIC06',
+                    ],
+                    \array_keys($row->toArray())
+                );
+            });
+            $total += $rows->count();
+        }
+
+        $this->assertSame(64890, $total);
+    }
+
+    public function test_extracting_yml_with_different_param_number() : void
+    {
+        $rows = df()
+            ->extract(YAML::from(__DIR__ . '/../Fixtures/different_param_count.yml'))
+            ->fetch();
+
+        $this->assertSame(2, $rows->count());
+    }
 //
-//        $this->assertSame(
-//            [
-//                [
-//                    [
-//                        'id' => '',
-//                        'name' => '',
-//                        'active' => 'false',
-//                        '_input_file_uri' => $path->uri(),
-//                    ],
-//                ],
-//                [
-//                    [
-//                        'id' => '1',
-//                        'name' => 'Norbert',
-//                        'active' => '',
-//                        '_input_file_uri' => $path->uri(),
-//                    ],
-//                ],
-//            ],
-//            \array_map(
-//                static fn (Rows $r) => $r->toArray(),
-//                \iterator_to_array($extractor->extract(new FlowContext(Config::builder()->putInputIntoRows()->build())))
-//            )
-//        );
-//    }
-//
-//    public function test_extracting_csv_empty_columns_as_null() : void
-//    {
-//        $extractor = from_csv(
-//            __DIR__ . '/../Fixtures/file_with_empty_columns.csv'
-//        );
-//
-//        $this->assertSame(
-//            [
-//                [
-//                    [
-//                        'id' => null,
-//                        'name' => null,
-//                        'active' => 'false',
-//                    ],
-//                ],
-//                [
-//                    [
-//                        'id' => '1',
-//                        'name' => 'Norbert',
-//                        'active' => null,
-//                    ],
-//                ],
-//            ],
-//            \array_map(
-//                static fn (Rows $r) => $r->toArray(),
-//                \iterator_to_array($extractor->extract(new FlowContext(Config::default())))
-//            )
-//        );
-//    }
-//
-//    public function test_extracting_csv_files_from_directory_recursively() : void
-//    {
-//        $extractor = from_csv(
-//            [
-//                Path::realpath(__DIR__ . '/../Fixtures/annual-enterprise-survey-2019-financial-year-provisional-csv.csv'),
-//                Path::realpath(__DIR__ . '/../Fixtures/nested/annual-enterprise-survey-2019-financial-year-provisional-csv.csv'),
-//            ],
-//            false
-//        );
-//
-//        $total = 0;
-//
-//        /** @var Rows $rows */
-//        foreach ($extractor->extract(new FlowContext(Config::default())) as $rows) {
-//            $rows->each(function (Row $row) : void {
-//                $this->assertSame(
-//                    ['e00', 'e01', 'e02', 'e03', 'e04', 'e05', 'e06', 'e07', 'e08', 'e09'],
-//                    \array_keys($row->toArray())
-//                );
-//            });
-//            $total += $rows->count();
-//        }
-//
-//        $this->assertSame(64892, $total);
-//    }
-//
-//
-//    public function test_extracting_csv_with_corrupted_row() : void
-//    {
-//        $rows = df()
-//            ->extract(from_csv(__DIR__ . '/../Fixtures/corrupted_row.csv'))
-//            ->fetch();
-//
-//        $this->assertSame(3, $rows->count());
-//    }
-//
-//    public function test_extracting_csv_with_more_columns_than_headers() : void
-//    {
-//        $extractor = from_csv(
-//            __DIR__ . '/../Fixtures/more_columns_than_headers.csv'
-//        );
-//
-//        $total = 0;
-//
-//        /** @var Rows $rows */
-//        foreach ($extractor->extract(new FlowContext(Config::default())) as $rows) {
-//            $rows->each(function (Row $row) : void {
-//                $this->assertSame(
-//                    ['id', 'name'],
-//                    \array_keys($row->toArray())
-//                );
-//            });
-//            $total += $rows->count();
-//        }
-//
-//        $this->assertSame(1, $total);
-//    }
-//
-//    public function test_extracting_csv_with_more_headers_than_columns() : void
-//    {
-//        $extractor = from_csv(
-//            Path::realpath(__DIR__ . '/../Fixtures/more_headers_than_columns.csv')
-//        );
-//
-//        $total = 0;
-//
-//        /** @var Rows $rows */
-//        foreach ($extractor->extract(new FlowContext(Config::default())) as $rows) {
-//            $rows->each(function (Row $row) : void {
-//                $this->assertSame(
-//                    ['id', 'name', 'active'],
-//                    \array_keys($row->toArray())
-//                );
-//            });
-//            $total += $rows->count();
-//        }
-//
-//        $this->assertSame(1, $total);
-//    }
 //
 //    public function test_extracting_csv_with_more_than_1000_characters_per_line_splits_rows() : void
 //    {
@@ -286,33 +189,5 @@ class YAMLExtractorTest extends TestCase
 //                ->fetch()
 //                ->toArray()
 //        );
-//    }
-//
-//    public function test_signal_stop() : void
-//    {
-//        $path = \sys_get_temp_dir() . '/csv_extractor_signal_stop.csv';
-//
-//        if (\file_exists($path)) {
-//            \unlink($path);
-//        }
-//
-//        df()->read(from_array([['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4], ['id' => 5]]))
-//            ->write(to_csv($path))
-//            ->run();
-//
-//        $extractor = new CSVExtractor(Path::realpath($path));
-//
-//        $generator = $extractor->extract(new FlowContext(Config::default()));
-//
-//        $this->assertSame([['id' => '1']], $generator->current()->toArray());
-//        $this->assertTrue($generator->valid());
-//        $generator->next();
-//        $this->assertSame([['id' => '2']], $generator->current()->toArray());
-//        $this->assertTrue($generator->valid());
-//        $generator->next();
-//        $this->assertSame([['id' => '3']], $generator->current()->toArray());
-//        $this->assertTrue($generator->valid());
-//        $generator->send(Signal::STOP);
-//        $this->assertFalse($generator->valid());
 //    }
 }
