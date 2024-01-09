@@ -29,14 +29,11 @@ final class YAMLExtractor implements Extractor
             /** @var array<Row> $rowData */
             $rows = yaml_parse_file($stream->path()->path());
 
-
             if ([] !== $rows) {
                 yield array_to_rows($rows, $this->entryFactory);
             }
 
-            if ($stream->isOpen()) {
-                $stream->close();
-            }
+            $stream->close();
         }
     }
 }

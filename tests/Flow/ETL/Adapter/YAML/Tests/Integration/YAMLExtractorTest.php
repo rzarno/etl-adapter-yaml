@@ -6,7 +6,6 @@ namespace Flow\ETL\Adapter\YAML\Tests\Integration;
 use Flow\ETL\Config;
 use Flow\ETL\ConfigBuilder;
 use Flow\ETL\DSL\YAML;
-use Flow\ETL\Extractor\Signal;
 use Flow\ETL\Filesystem\LocalFilesystem;
 use Flow\ETL\Filesystem\Path;
 use Flow\ETL\Flow;
@@ -15,7 +14,6 @@ use Flow\ETL\Row;
 use Flow\ETL\Rows;
 use PHPUnit\Framework\TestCase;
 use function Flow\ETL\DSL\df;
-use function Flow\ETL\DSL\from_array;
 use function Flow\ETL\DSL\ref;
 
 class YAMLExtractorTest extends TestCase
@@ -100,94 +98,48 @@ class YAMLExtractorTest extends TestCase
 
         $this->assertSame(2, $rows->count());
     }
-//
-//
-//    public function test_extracting_csv_with_more_than_1000_characters_per_line_splits_rows() : void
-//    {
-//        $this->assertCount(
-//            2,
-//            df()
-//                ->read(from_csv(__DIR__ . '/../Fixtures/more_than_1000_characters_per_line.csv'))
-//                ->fetch()
-//                ->toArray(),
-//            'Long line was broken down into two rows.'
-//        );
-//    }
-//
-//    public function test_extracting_csv_with_more_than_1000_characters_per_line_with_increased_read_in_line_option() : void
-//    {
-//        $this->assertCount(
-//            1,
-//            df()
-//                ->read(from_csv(__DIR__ . '/../Fixtures/more_than_1000_characters_per_line.csv', characters_read_in_line: 2000))
-//                ->fetch()
-//                ->toArray(),
-//            'Long line was read as one row.'
-//        );
-//    }
-//
-//    public function test_limit() : void
-//    {
-//        $path = \sys_get_temp_dir() . '/csv_extractor_signal_stop.csv';
-//
-//        if (\file_exists($path)) {
-//            \unlink($path);
-//        }
-//
-//        df()->read(from_array([['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4], ['id' => 5]]))
-//            ->write(to_csv($path))
-//            ->run();
-//
-//        $extractor = new CSVExtractor(Path::realpath($path));
-//        $extractor->changeLimit(2);
-//
-//        $this->assertCount(
-//            2,
-//            \iterator_to_array($extractor->extract(new FlowContext(Config::default())))
-//        );
-//    }
-//
-//    public function test_loading_data_from_all_partitions() : void
-//    {
-//        $this->assertSame(
-//            [
-//                ['group' => '1', 'id' => 1, 'value' => 'a'],
-//                ['group' => '1', 'id' => 2, 'value' => 'b'],
-//                ['group' => '1', 'id' => 3, 'value' => 'c'],
-//                ['group' => '1', 'id' => 4, 'value' => 'd'],
-//                ['group' => '2', 'id' => 5, 'value' => 'e'],
-//                ['group' => '2', 'id' => 6, 'value' => 'f'],
-//                ['group' => '2', 'id' => 7, 'value' => 'g'],
-//                ['group' => '2', 'id' => 8, 'value' => 'h'],
-//            ],
-//            df()
-//                ->read(from_csv(__DIR__ . '/../Fixtures/partitioned/group=*/*.csv'))
-//                ->withEntry('id', ref('id')->cast('int'))
-//                ->sortBy(ref('id'))
-//                ->fetch()
-//                ->toArray()
-//        );
-//    }
-//
-//    public function test_loading_data_from_all_with_local_fs() : void
-//    {
-//        $this->assertSame(
-//            [
-//                ['group' => '1', 'id' => 1, 'value' => 'a'],
-//                ['group' => '1', 'id' => 2, 'value' => 'b'],
-//                ['group' => '1', 'id' => 3, 'value' => 'c'],
-//                ['group' => '1', 'id' => 4, 'value' => 'd'],
-//                ['group' => '2', 'id' => 5, 'value' => 'e'],
-//                ['group' => '2', 'id' => 6, 'value' => 'f'],
-//                ['group' => '2', 'id' => 7, 'value' => 'g'],
-//                ['group' => '2', 'id' => 8, 'value' => 'h'],
-//            ],
-//            (new Flow((new ConfigBuilder())->filesystem(new LocalFilesystem())))
-//                ->read(from_csv(__DIR__ . '/../Fixtures/partitioned/group=*/*.csv'))
-//                ->withEntry('id', ref('id')->cast('int'))
-//                ->sortBy(ref('id'))
-//                ->fetch()
-//                ->toArray()
-//        );
-//    }
+
+    public function test_loading_data_from_all_partitions() : void
+    {
+        $this->assertSame(
+            [
+                ['group' => 1, 'id' => 1, 'value' => 'a'],
+                ['group' => 1, 'id' => 2, 'value' => 'b'],
+                ['group' => 1, 'id' => 3, 'value' => 'c'],
+                ['group' => 1, 'id' => 4, 'value' => 'd'],
+                ['group' => 2, 'id' => 5, 'value' => 'e'],
+                ['group' => 2, 'id' => 6, 'value' => 'f'],
+                ['group' => 2, 'id' => 7, 'value' => 'g'],
+                ['group' => 2, 'id' => 8, 'value' => 'h'],
+            ],
+            df()
+                ->read(YAML::from(__DIR__ . '/../Fixtures/partitioned/group=*/*.yml'))
+                ->withEntry('id', ref('id')->cast('int'))
+                ->sortBy(ref('id'))
+                ->fetch()
+                ->toArray()
+        );
+    }
+
+    public function test_loading_data_from_all_with_local_fs() : void
+    {
+        $this->assertSame(
+            [
+                ['group' => 1, 'id' => 1, 'value' => 'a'],
+                ['group' => 1, 'id' => 2, 'value' => 'b'],
+                ['group' => 1, 'id' => 3, 'value' => 'c'],
+                ['group' => 1, 'id' => 4, 'value' => 'd'],
+                ['group' => 2, 'id' => 5, 'value' => 'e'],
+                ['group' => 2, 'id' => 6, 'value' => 'f'],
+                ['group' => 2, 'id' => 7, 'value' => 'g'],
+                ['group' => 2, 'id' => 8, 'value' => 'h'],
+            ],
+            (new Flow((new ConfigBuilder())->filesystem(new LocalFilesystem())))
+                ->read(YAML::from(__DIR__ . '/../Fixtures/partitioned/group=*/*.yml'))
+                ->withEntry('id', ref('id')->cast('int'))
+                ->sortBy(ref('id'))
+                ->fetch()
+                ->toArray()
+        );
+    }
 }
