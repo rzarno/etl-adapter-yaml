@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Flow\ETL\Adapter\YAML\Tests\Integration;
 
-use Exception;
+use function Flow\ETL\DSL\df;
+use function Flow\ETL\DSL\ref;
 use Flow\ETL\Adapter\YAML\Exception\WrongFileFormatException;
 use Flow\ETL\Config;
 use Flow\ETL\ConfigBuilder;
-use Flow\ETL\DSL\YAML;
 use Flow\ETL\Filesystem\LocalFilesystem;
 use Flow\ETL\Filesystem\Path;
 use Flow\ETL\Flow;
@@ -15,11 +15,8 @@ use Flow\ETL\FlowContext;
 use Flow\ETL\Row;
 use Flow\ETL\Rows;
 use PHPUnit\Framework\TestCase;
-use function Flow\ETL\Adapter\CSV\from_csv;
-use function Flow\ETL\DSL\df;
-use function Flow\ETL\DSL\ref;
 
-class YAMLExtractorTest extends TestCase
+final class YAMLExtractorTest extends TestCase
 {
     public function test_extracting_yml_file_param_names_and_row_count() : void
     {
