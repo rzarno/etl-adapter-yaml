@@ -10,7 +10,7 @@ use Flow\ETL\Filesystem\Path;
 use Flow\ETL\Loader;
 
 function from_yml(
-    string|Path|array $path,
+    string|Path|array $path
 ) : Extractor {
     if (\is_array($path)) {
         $extractors = [];

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Flow\ETL\Adapter\YAML\Tests\Integration;
 
+use Flow\ETL\DSL\YAML;
+use function Flow\ETL\Adapter\YAML\from_yml;
 use function Flow\ETL\DSL\df;
 use function Flow\ETL\DSL\ref;
 use Flow\ETL\Adapter\YAML\Exception\WrongFileFormatException;

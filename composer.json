@@ -25,7 +25,10 @@
             "Flow\\": [
                 "src/Flow"
             ]
-        }
+        },
+        "files": [
+            "src/Flow/ETL/Adapter/YAML/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
