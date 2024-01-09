@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Flow\ETL\Adapter\YAML;
 
+use Flow\ETL\Adapter\YAML\Exception\WrongFileFormatException;
 use Flow\ETL\Extractor;
 use Flow\ETL\Filesystem\Path;
 use Flow\ETL\Filesystem\Stream\Mode;
@@ -29,6 +30,9 @@ final class YAMLExtractor implements Extractor
             /** @var array<Row> $rowData */
             $rows = yaml_parse_file($stream->path()->path());
 
+            if (is_string($rows)) {
+                throw new WrongFileFormatException();
+            }
             if ([] !== $rows) {
                 yield array_to_rows($rows, $this->entryFactory);
             }

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Flow\ETL\Adapter\YAML\Tests\Integration;
 
+use Exception;
+use Flow\ETL\Adapter\YAML\Exception\WrongFileFormatException;
 use Flow\ETL\Config;
 use Flow\ETL\ConfigBuilder;
 use Flow\ETL\DSL\YAML;
@@ -13,6 +15,7 @@ use Flow\ETL\FlowContext;
 use Flow\ETL\Row;
 use Flow\ETL\Rows;
 use PHPUnit\Framework\TestCase;
+use function Flow\ETL\Adapter\CSV\from_csv;
 use function Flow\ETL\DSL\df;
 use function Flow\ETL\DSL\ref;
 
@@ -141,5 +144,14 @@ class YAMLExtractorTest extends TestCase
                 ->fetch()
                 ->toArray()
         );
+    }
+
+    public function test_loading_json_file_as_yml_gives_empty_set() : void
+    {
+        $this->expectException(WrongFileFormatException::class);
+        $extractor = YAML::from(Path::realpath(__DIR__ . '/../Fixtures/not_yml.csv'));
+        $generator = $extractor->extract(new FlowContext(Config::default()));
+
+        $this->assertEmpty(\iterator_to_array($generator));
     }
 }
